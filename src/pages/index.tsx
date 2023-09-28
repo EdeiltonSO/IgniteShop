@@ -8,7 +8,7 @@ import c1 from '../assets/shirts/1.png'
 import c2 from '../assets/shirts/2.png'
 import c3 from '../assets/shirts/3.png'
 import c4 from '../assets/shirts/4.png'
-import { GetServerSideProps } from 'next'
+import { GetServerSideProps, GetStaticProps } from 'next'
 
 import { stripe } from '../lib/stripe'
 import Stripe from 'stripe'
@@ -49,7 +49,7 @@ export default function Home({products}: HomeProps) {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
   const response = await stripe.products.list({
     expand: ['data.default_price']
   })
@@ -68,6 +68,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   return {
     props: {
       products
-    }
+    },
+    revalidate: 60*60*2 // 2h
   }
 }
