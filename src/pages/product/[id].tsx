@@ -43,7 +43,7 @@ export default function Product({ product }: ProductProps) {
         } catch (error) {
             setIsCreatingCheckoutSession(false)
             // conectar com alguma ferramenta de observabilidade
-            alert('alha ao redirecionar ao checkout!')
+            alert('Falha ao redirecionar ao checkout!')
         }
     }
     
