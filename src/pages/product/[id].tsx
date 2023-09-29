@@ -4,6 +4,8 @@ import { stripe } from '../../lib/stripe'
 import Stripe from 'stripe'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
+import axios from 'axios'
+import { useState } from 'react'
 
 interface ProductProps {
     product: {
@@ -12,14 +14,37 @@ interface ProductProps {
         imageUrl: string;
         price: string;
         description: string;
+        defaultPriceId: string;
     }
 }
 
 export default function Product({ product }: ProductProps) {
-    const { isFallback } = useRouter()
+    const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] = useState(false)
+    // const { isFallback } = useRouter()
 
-    if (isFallback) {
-        return <p>Carregando...</p>
+    // if (isFallback) {
+    //     return <p>Carregando...</p>
+    // }
+
+    async function handleBuyProduct() {
+        try {
+            setIsCreatingCheckoutSession(true)
+
+            const response = await axios.post('/api/checkout', {
+                priceId: product.defaultPriceId
+            })
+
+            // vemos lá no checkout.ts que ele devolve
+            // uma resposta chamada checkoutUrl
+            const { checkoutUrl } = response.data;
+
+            window.location.href = checkoutUrl
+
+        } catch (error) {
+            setIsCreatingCheckoutSession(false)
+            // conectar com alguma ferramenta de observabilidade
+            alert('alha ao redirecionar ao checkout!')
+        }
     }
     
     return (
@@ -34,7 +59,7 @@ export default function Product({ product }: ProductProps) {
 
                 <p>{product.description}</p>
 
-                <button>
+                <button disabled={isCreatingCheckoutSession} onClick={handleBuyProduct}>
                     Comprar agora
                 </button>
             </ProductDetails>
@@ -49,7 +74,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
         paths: [
             // { params: { id: '' } }
         ],
-        fallback: true
+        fallback: 'blocking'
     }
 }
 
@@ -72,7 +97,8 @@ export const getStaticProps: GetStaticProps<any, { id: string }> = async ({ para
                     style: 'currency',
                     currency: 'BRL'
                 }).format(price.unit_amount! / 100),
-                description: product.description
+                description: product.description,
+                defaultPriceId: price.id
             }
         },
         revalidate: 3600 // 1h
