@@ -34,15 +34,12 @@ export default function Product({ product }: ProductProps) {
                 priceId: product.defaultPriceId
             })
 
-            // vemos lá no checkout.ts que ele devolve
-            // uma resposta chamada checkoutUrl
             const { checkoutUrl } = response.data;
 
             window.location.href = checkoutUrl
 
         } catch (error) {
             setIsCreatingCheckoutSession(false)
-            // conectar com alguma ferramenta de observabilidade
             alert('Falha ao redirecionar ao checkout!')
         }
     }
