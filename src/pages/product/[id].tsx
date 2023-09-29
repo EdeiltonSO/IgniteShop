@@ -1,20 +1,38 @@
 import { ImageContainer, ProductContainer, ProductDetails } from '@/styles/pages/product'
+import { GetStaticPaths, GetStaticProps } from 'next'
+import { stripe } from '../../lib/stripe'
+import Stripe from 'stripe'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 
-export default function Product() {
-    const { query } = useRouter()
+interface ProductProps {
+    product: {
+        id: string;
+        name: string;
+        imageUrl: string;
+        price: string;
+        description: string;
+    }
+}
 
+export default function Product({ product }: ProductProps) {
+    const { isFallback } = useRouter()
+
+    if (isFallback) {
+        return <p>Carregando...</p>
+    }
+    
     return (
         <ProductContainer>
             <ImageContainer>
-
+                <Image src={product.imageUrl} width={420} height={480} alt='' />
             </ImageContainer>
 
             <ProductDetails>
-                <h1>Camiseta X</h1>
-                <span>R$ 79,90</span>
+                <h1>{product.name}</h1>
+                <span>{product.price}</span>
 
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                <p>{product.description}</p>
 
                 <button>
                     Comprar agora
@@ -22,4 +40,41 @@ export default function Product() {
             </ProductDetails>
         </ProductContainer>
     )
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+    // estratégia: colocar nos paths os produtos mais acessados
+    
+    return {
+        paths: [
+            // { params: { id: '' } }
+        ],
+        fallback: true
+    }
+}
+
+export const getStaticProps: GetStaticProps<any, { id: string }> = async ({ params }) => {
+    const productId = params!.id
+
+    const product = await stripe.products.retrieve(productId, {
+        expand: ['default_price']
+    })
+
+    const price = product.default_price as Stripe.Price
+
+    return {
+        props: {
+            product: {
+                id: product.id,
+                name: product.name,
+                imageUrl: product.images[0],
+                price: new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                }).format(price.unit_amount! / 100),
+                description: product.description
+            }
+        },
+        revalidate: 3600 // 1h
+    }
 }
