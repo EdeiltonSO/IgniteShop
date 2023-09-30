@@ -1,11 +1,12 @@
-import { ImageContainer, ProductContainer, ProductDetails } from '@/styles/pages/product'
 import { GetStaticPaths, GetStaticProps } from 'next'
-import { stripe } from '../../lib/stripe'
-import Stripe from 'stripe'
-import Image from 'next/image'
-import axios from 'axios'
 import { useState } from 'react'
-import Head from 'next/head';
+import Image from 'next/image'
+import Head from 'next/head'
+import Stripe from 'stripe'
+import axios from 'axios'
+
+import { ImageContainer, ProductContainer, ProductDetails } from '@/styles/pages/product'
+import { stripe } from '../../lib/stripe'
 
 interface ProductProps {
     product: {

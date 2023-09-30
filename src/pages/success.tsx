@@ -1,10 +1,11 @@
-import Link from "next/link"
-import { ImageContainer, SuccessContainer } from "@/styles/pages/success"
-import { GetServerSideProps } from "next"
-import { stripe } from "../lib/stripe"
-import Stripe from "stripe"
-import Image from "next/image"
-import Head from 'next/head';
+import { GetServerSideProps } from 'next'
+import Image from 'next/image'
+import Head from 'next/head'
+import Link from 'next/link'
+import Stripe from 'stripe'
+
+import { ImageContainer, SuccessContainer } from '@/styles/pages/success'
+import { stripe } from '../lib/stripe'
 
 interface SuccessProps {
     customerName: string;

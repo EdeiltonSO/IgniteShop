@@ -1,14 +1,14 @@
-import { HomeContainer, Product } from '@/styles/pages/home'
-import Image from 'next/image'
-import Link from 'next/link'
-import Head from 'next/head';
 import { useKeenSlider } from 'keen-slider/react'
+import { GetStaticProps } from 'next'
+import Image from 'next/image'
+import Head from 'next/head'
+import Link from 'next/link'
+import Stripe from 'stripe'
+
 import 'keen-slider/keen-slider.min.css'
 
-import { GetStaticProps } from 'next'
-
+import { HomeContainer, Product } from '@/styles/pages/home'
 import { stripe } from '../lib/stripe'
-import Stripe from 'stripe'
 
 interface HomeProps {
   products: {
